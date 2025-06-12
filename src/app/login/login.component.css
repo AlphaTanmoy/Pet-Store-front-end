@@ -1,0 +1,68 @@
+body {
+  background-color: #f8f9fa;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #1e90ff, #00c6ff);
+  border: none;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(90deg, #00c6ff, #1e90ff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+a.text-primary {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a.text-primary:hover {
+  text-decoration: underline;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  vertical-align: text-bottom;
+  border: 0.2em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}

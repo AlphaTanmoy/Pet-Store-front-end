@@ -1,0 +1,78 @@
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-lg p-4" style="width: 400px;">
+    <h3 class="text-center mb-4">Login</h3>
+    
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    
+    <form (ngSubmit)="$event.preventDefault()">
+      <!-- Email Input -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          [disabled]="isLoading || showOtpField"
+          required
+        />
+      </div>
+      
+      <!-- OTP Input (Conditional) -->
+      <div class="mb-3" *ngIf="showOtpField">
+        <label for="otp" class="form-label">Enter OTP</label>
+        <input
+          type="text"
+          class="form-control"
+          id="otp"
+          [(ngModel)]="otp"
+          name="otp"
+          [disabled]="isLoading"
+          placeholder="Enter the 6-digit OTP"
+          required
+        />
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="d-grid gap-2">
+        <button 
+          *ngIf="!showOtpField"
+          type="button" 
+          class="btn btn-primary"
+          (click)="onSendOtp()"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Send OTP
+        </button>
+        
+        <button 
+          *ngIf="showOtpField"
+          type="button" 
+          class="btn btn-primary"
+          (click)="onVerifyOtp()"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Verify OTP
+        </button>
+      </div>
+    </form>
+    
+    <!-- Resend OTP Link -->
+    <div *ngIf="showOtpField" class="text-center mt-3">
+      <a href="#" (click)="$event.preventDefault(); onSendOtp()" [class.text-muted]="isLoading">
+        Resend OTP
+      </a>
+    </div>
+  </div>
+</div>
