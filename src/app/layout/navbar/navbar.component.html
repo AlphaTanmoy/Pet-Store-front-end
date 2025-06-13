@@ -1,19 +1,64 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Admin</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
+<div class="navbar-container">
+  <!-- Top Navigation Bar -->
+  <nav class="top-navbar">
+    <div class="nav-left">
+      <button class="menu-toggle" (click)="toggleSidebar()">
+        <i class="fas fa-bars"></i>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a>
-          </li>
-          <li class="nav-item">
-            <button class="btn btn-outline-danger ms-3" (click)="logout()">Logout</button>
-          </li>
-        </ul>
+      <div class="logo">
+        <a routerLink="/">Pet Store</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="user-menu">
+        <button class="user-btn">
+          <i class="fas fa-user"></i>
+          <span class="user-name">User</span>
+        </button>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item">Profile</a>
+          <a href="#" class="dropdown-item" (click)="logout()">Logout</a>
+        </div>
       </div>
     </div>
   </nav>
-  
+
+  <!-- Sidebar -->
+  <div class="sidebar" [class.open]="isSidebarOpen">
+    <div class="sidebar-header">
+      <h3>Menu</h3>
+      <button class="close-btn" (click)="toggleSidebar()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <ul class="menu">
+      <li *ngFor="let item of menuItems" class="menu-item" [class.has-submenu]="item.listOfSubMenu.length > 0">
+        <a 
+          [routerLink]="item.doHaveRedirectionLink ? item.menuLink : '#'" 
+          [routerLinkActive]="'active'"
+          (click)="toggleSubMenu($event, item)"
+          class="menu-link"
+        >
+          <img *ngIf="item.svgFileDataLink" [src]="item.svgFileDataLink" [alt]="item.menuName" class="menu-icon" />
+          <span class="menu-text">{{ item.menuName }}</span>
+          <i *ngIf="item.listOfSubMenu.length > 0" class="fas fa-chevron-down arrow"></i>
+        </a>
+        <ul *ngIf="item.listOfSubMenu.length > 0" class="submenu" [class.show]="item['isOpen']">
+          <li *ngFor="let subItem of item.listOfSubMenu" class="submenu-item">
+            <a 
+              [routerLink]="subItem.menuLink" 
+              routerLinkActive="active"
+              class="submenu-link"
+            >
+              <img *ngIf="subItem.svgFileDataLink" [src]="subItem.svgFileDataLink" [alt]="subItem.menuName" class="menu-icon" />
+              {{ subItem.menuName }}
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" [class.active]="isSidebarOpen" (click)="toggleSidebar()"></div>
+</div>

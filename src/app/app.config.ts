@@ -11,6 +11,8 @@ import { routes } from './app.routes';
 import { ErrorHandlerService } from './services/error-handler.service';
 import { LoadingInterceptor } from './utils/loading.interceptor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NavbarService } from './services/navbar.service';
+import { AuthInterceptor } from './services/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,6 +30,8 @@ export const appConfig: ApplicationConfig = {
       FontAwesomeModule
     ),
     { provide: ErrorHandler, useClass: ErrorHandlerService },
-    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    NavbarService
   ]
 };

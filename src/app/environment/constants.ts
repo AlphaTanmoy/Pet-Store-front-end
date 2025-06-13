@@ -11,7 +11,7 @@ export enum Microservice {
   S3 = 'S3',
   KYC = 'KYC',
   SELLER = 'SELLER',
-  USER = 'USER'
+  USER = 'USER',
 }
 
 export enum UserRole {
