@@ -1,25 +1,46 @@
-body {
-  background-color: #f8f9fa;
-  height: 100vh;
-  margin: 0;
+/* src/app/login/login.component.css */
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 1rem;
 }
 
 .card {
-  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
   border: none;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  border-radius: 15px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+}
+
+.alert {
+  margin-bottom: 1.5rem;
+  border: none;
+  border-radius: 8px;
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #1e90ff, #00c6ff);
+  padding: 0.6rem;
+  font-weight: 500;
   border: none;
-  padding: 0.5rem 1.5rem;
+  background: linear-gradient(90deg, #0d6efd, #0b5ed7);
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:disabled {
@@ -27,42 +48,30 @@ body {
   cursor: not-allowed;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(90deg, #00c6ff, #1e90ff);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.form-control:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
-}
-
-a.text-primary {
+.btn-link {
   text-decoration: none;
-  transition: color 0.2s ease;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #0d6efd;
 }
 
-a.text-primary:hover {
+.btn-link:hover {
   text-decoration: underline;
 }
 
-/* Loading spinner animation */
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.btn-link:disabled {
+  color: #6c757d;
+  text-decoration: none;
+  cursor: not-allowed;
 }
 
-.spinner-border {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  vertical-align: text-bottom;
-  border: 0.2em solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
+/* Animation for OTP field */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.otp-field {
+  animation: fadeIn 0.3s ease-out;
 }

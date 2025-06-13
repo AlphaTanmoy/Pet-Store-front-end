@@ -28,7 +28,7 @@ export class AuthService implements OnDestroy {
   private http = inject(HttpClient);
   private baseUrl = environment.microservices[Microservice.AUTH];
   private refreshToken: string | null = null;
-  private userRole: string | null = null;
+  private userRole: string | null = null; // Keep as string | null for consistency with sessionStorage
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   private refreshTokenInProgress = false;
   private router = inject(Router);
@@ -45,12 +45,18 @@ export class AuthService implements OnDestroy {
   }
   
   private initializeAuthState(): void {
-    const token = this.getToken();
+    // Get tokens and role from sessionStorage
+    const token = sessionStorage.getItem('jwt');
+    const refreshToken = sessionStorage.getItem('refreshToken');
+    const role = sessionStorage.getItem('role');
+    
     if (token) {
+      this.authToken = token;
+      this.refreshToken = refreshToken;
+      this.userRole = role; // Keep as string | null
       this.setAuthState(true);
-      this.isAuthenticatedSubject.next(true);
     } else {
-      this.isAuthenticatedSubject.next(false);
+      this.clearAuth();
     }
   }
 
@@ -102,21 +108,30 @@ export class AuthService implements OnDestroy {
     );
   }
 
-  verifyOtp(email: string, otp: string): Observable<{ status: boolean; message: string }> {
+  verifyOtp(email: string, otp: string): Observable<{ status: boolean; message: string; jwt?: string; refreshToken?: string; role?: string | null }> {
     const url = getApiUrl(Microservice.AUTH, 'SIGN_IN');
-    return this.http.post<{ status: boolean; message: string }>(
+    return this.http.post<{
+      status: boolean;
+      message: string;
+      jwt?: string;
+      refreshToken?: string;
+      role?: string;
+      twoStepVerificationEnabled?: boolean;
+      twoStepVerified?: boolean;
+    }>(
       url,
       { email, otp },
       { observe: 'response' }
     ).pipe(
       map(response => {
         if (response.body) {
-          if (response.body.status) {
-            this.setToken('dummy-jwt-token');
-            this.messageService.success('Login successful!');
+          const { jwt, refreshToken, role, status, message } = response.body;
+          if (status && jwt) {
+            this.setAuth(jwt, refreshToken || '', role || null);
+            this.messageService.success(message || 'Login successful!');
           } else {
             this.messageService.error({
-              text: response.body.message || 'OTP verification failed',
+              text: message || 'OTP verification failed',
               type: 'error',
               error: response.body
             });
@@ -144,17 +159,34 @@ export class AuthService implements OnDestroy {
     );
   }
 
-  private setAuth(token: string, refreshToken: string, role: string): void {
-    console.log('AuthService: Setting auth token and user role:', { hasToken: !!token, role });
-    this.authToken = token;
-    this.refreshToken = refreshToken;
+  private setAuth(jwt: string, refreshToken: string, role: string | null): void {
+    console.log('AuthService: Setting auth token and user role:', { hasToken: !!jwt, role });
+    this.authToken = jwt;
+    this.refreshToken = refreshToken || null;
     this.userRole = role;
+    
+    // Store tokens and role in sessionStorage
+    sessionStorage.setItem('jwt', jwt);
+    if (refreshToken) {
+      sessionStorage.setItem('refreshToken', refreshToken);
+    }
+    if (role) {
+      sessionStorage.setItem('role', role);
+    } else {
+      sessionStorage.removeItem('role');
+    }
+    
     this.setAuthState(true);
   }
 
-  setToken(token: string): void {
+  setToken(token: string | null): void {
     this.authToken = token;
-    this.setAuthState(!!token);
+    if (token) {
+      sessionStorage.setItem('jwt', token);
+      this.setAuthState(true);
+    } else {
+      this.clearAuth();
+    }
   }
   
   private setAuthState(isAuthenticated: boolean): void {
@@ -162,14 +194,23 @@ export class AuthService implements OnDestroy {
   }
 
   getToken(): string | null {
+    if (!this.authToken) {
+      this.authToken = sessionStorage.getItem('jwt');
+    }
     return this.authToken;
   }
 
   getRefreshToken(): string | null {
+    if (!this.refreshToken) {
+      this.refreshToken = sessionStorage.getItem('refreshToken');
+    }
     return this.refreshToken;
   }
 
   getRole(): string | null {
+    if (!this.userRole) {
+      this.userRole = sessionStorage.getItem('role');
+    }
     return this.userRole;
   }
 
@@ -195,6 +236,16 @@ export class AuthService implements OnDestroy {
         this.refreshTokenInProgress = false;
       })
     );
+  }
+
+  clearAuth(): void {
+    this.authToken = null;
+    this.refreshToken = null;
+    this.userRole = null;
+    sessionStorage.removeItem('jwt');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('role');
+    this.setAuthState(false);
   }
 
   logout(): void {

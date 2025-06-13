@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { routes } from './app.routes';
 import { ErrorHandlerService } from './services/error-handler.service';
 import { LoadingInterceptor } from './utils/loading.interceptor';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,7 +24,8 @@ export const appConfig: ApplicationConfig = {
       MatSnackBarModule,
       MatButtonModule,
       MatIconModule,
-      MatProgressSpinnerModule
+      MatProgressSpinnerModule,
+      FontAwesomeModule
     ),
     { provide: ErrorHandler, useClass: ErrorHandlerService },
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
