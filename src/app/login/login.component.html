@@ -7,7 +7,7 @@
         <p class="text-muted">Sign in to your account to continue</p>
       </div>
 
-      <form (ngSubmit)="$event.preventDefault()" class="mt-3">
+      <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" (change)="onFormChange()" class="mt-3">
         <!-- Email Input -->
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
@@ -24,42 +24,62 @@
               [disabled]="isLoading || showOtpField"
               placeholder="Enter your email"
               required
-              (keydown)="onKeyDown($event)"
+              (keydown)="onKeyDown($event, loginForm)"
             />
           </div>
         </div>
 
         <!-- OTP Input (Conditional) -->
-        <div class="mb-3" *ngIf="showOtpField">
-          <label for="otp" class="form-label">Verification Code</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <fa-icon [icon]="faShieldAlt"></fa-icon>
-            </span>
-            <input
-              type="text"
-              inputmode="numeric"
-              pattern="[0-9]*"
-              class="form-control"
-              id="otp"
-              [(ngModel)]="otp"
-              name="otp"
-              [disabled]="isLoading"
-              placeholder="Enter the 6-digit code"
-              required
-              (keydown)="onKeyDown($event)"
-            />
+        <div class="mb-3 otp-field" *ngIf="showOtpField">
+          <label class="form-label d-block text-center mb-3">Verification Code</label>
+          <p class="text-muted text-center small mb-3">Enter the 6-digit code sent to your email</p>
+          <div class="d-flex justify-content-center gap-2 mb-4">
+            <div *ngFor="let i of [0,1,2,3,4,5]; let last = last" class="otp-input-container">
+              <input
+                type="tel"
+                inputmode="numeric"
+                pattern="[0-9]"
+                class="form-control text-center otp-input"
+                [class.is-invalid]="errorMessage"
+                [id]="'otp' + i"
+                [value]="otpArray[i] || ''"
+                [name]="'otp' + i"
+                maxlength="1"
+                [disabled]="isLoading"
+                (keydown)="onOtpKeyDown($event, i)"
+                (input)="onOtpInput($event, i)"
+                (paste)="onPaste($event)"
+                (focus)="onOtpFocus($event)"
+                (select)="onOtpFocus($event)"
+                [attr.aria-label]="'Digit ' + (i + 1) + ' of 6'"
+                autocomplete="one-time-code"
+                [tabindex]="i === 0 ? '0' : '-1'"
+              />
+              <div class="otp-underline"></div>
+            </div>
           </div>
-          <div class="text-end mt-2">
+          <div class="text-center mt-3">
             <button 
               type="button" 
               class="btn btn-link p-0 text-decoration-none"
-              (click)="onResendOtp()"
-              [disabled]="isLoading"
+              (click)="onResendOtp(loginForm)"
+              [disabled]="isLoading || !canResend"
+              [class.text-muted]="!canResend"
+              [attr.aria-disabled]="isLoading || !canResend"
+              aria-label="Resend verification code"
+              *ngIf="isBrowser"
             >
               <fa-icon [icon]="faRedo" [spin]="isLoading" class="me-1"></fa-icon>
-              {{ isLoading ? 'Resending...' : 'Resend Code' }}
+              {{ isLoading ? 'Resending...' : resendButtonText }}
             </button>
+            <!-- Fallback for SSR -->
+            <span class="text-muted" *ngIf="!isBrowser">
+              <fa-icon [icon]="faRedo" class="me-1"></fa-icon>
+              Resend Code
+            </span>
+          </div>
+          <div *ngIf="errorMessage" class="text-danger text-center mt-2">
+            <small>{{ errorMessage }}</small>
           </div>
         </div>
 
@@ -67,9 +87,8 @@
         <div class="d-grid gap-2">
           <button 
             *ngIf="!showOtpField"
-            type="button" 
+            type="submit" 
             class="btn btn-primary"
-            (click)="onSendOtp()"
             [disabled]="isLoading || !email"
           >
             <fa-icon [icon]="faPaperPlane" class="me-2"></fa-icon>
@@ -78,9 +97,8 @@
           
           <button 
             *ngIf="showOtpField"
-            type="button" 
+            type="submit" 
             class="btn btn-primary"
-            (click)="onVerifyOtp()"
             [disabled]="isLoading || !otp"
           >
             <fa-icon [icon]="faSignInAlt" class="me-2"></fa-icon>
