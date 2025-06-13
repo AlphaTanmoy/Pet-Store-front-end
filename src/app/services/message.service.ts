@@ -31,7 +31,7 @@ export class MessageService {
       const errorMessage = error?.error?.errorMessage || 
                          error?.error?.message || 
                          error?.message || 
-                         'An unknown error occurred';
+                         'Server Down! Try Again Later';
       this.show({ 
         text: errorMessage, 
         type: 'error', 

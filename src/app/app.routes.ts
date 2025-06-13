@@ -5,7 +5,7 @@ import { ReportsComponent } from './reports/reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { LoginComponent } from './login/login.component';
 import { AuthenticatedLayoutComponent } from './layout/authenticated-layout/authenticated-layout.component';
-import { authGuard } from './guards/auth.guard';
+import { authGuard } from './users/auth.guard';
 
 // Public routes that don't require authentication
 const publicRoutes: Routes = [

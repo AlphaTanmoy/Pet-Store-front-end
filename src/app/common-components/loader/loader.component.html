@@ -2,27 +2,50 @@
   class="loader-container"
   role="status"
   aria-live="polite"
-  [attr.aria-label]="'Loading content'"
+  [attr.aria-label]="showError ? 'Error occurred' : 'Loading content'"
   [ngClass]="loaderClasses"
 >
-  <div class="paws">
-    <div 
-      *ngFor="let paw of paws; let i = index"
-      class="paw" 
-      [class.active]="paw.active"
-      [style.transform]="'scale(' + paw.size + ') translateY(' + (paw.active ? '-5px' : '0') + ')'"
-      [attr.aria-hidden]="true"
-    >
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
-        [attr.fill]="color"
-        [style.opacity]="paw.active ? '1' : '0.6'"
-        focusable="false"
+  <!-- Loading State -->
+  <div *ngIf="!showError" class="loading-state">
+    <div class="paws">
+      <div 
+        *ngFor="let paw of paws; let i = index"
+        class="paw" 
+        [class.active]="paw.active"
+        [style.transform]="'scale(' + paw.size + ') translateY(' + (paw.active ? '-5px' : '0') + ')'"
+        [attr.aria-hidden]="true"
       >
-        <path d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7-9c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-      </svg>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          [attr.fill]="color"
+          [style.opacity]="paw.active ? '1' : '0.6'"
+          focusable="false"
+        >
+          <path d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7-9c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+        </svg>
+      </div>
     </div>
+    <span class="sr-only">Loading...</span>
   </div>
-  <span class="sr-only">Loading...</span>
+
+  <!-- Error State -->
+  <div *ngIf="showError" class="error-state">
+    <div class="error-icon">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+    <button 
+      *ngIf="showRetry"
+      mat-raised-button 
+      color="primary" 
+      (click)="onRetry()"
+      class="retry-button"
+    >
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </div>
 </div>

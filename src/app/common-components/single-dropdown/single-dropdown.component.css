@@ -1,0 +1,112 @@
+.single-dropdown-container {
+  width: 100%;
+  position: relative;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Dropdown header styles */
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+}
+
+.spinner {
+  margin-right: 8px;
+}
+
+/* Option content styles */
+.option-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.option-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.option-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* No options message */
+.no-options {
+  padding: 8px 16px;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Clear button */
+.clear-button {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.clear-button:hover {
+  opacity: 1;
+}
+
+/* Error state */
+.error-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dropdown-header {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .no-options {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .dropdown-header {
+    padding: 8px 12px;
+  }
+  
+  .no-options {
+    padding: 8px 12px;
+  }
+}
+
+/* Animation for dropdown */
+::ng-deep .mat-select-panel {
+  animation: fadeIn 0.2s ease-out;
+  transform-origin: top center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

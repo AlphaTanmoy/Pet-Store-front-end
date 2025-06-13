@@ -1,1 +1,60 @@
-<p>single-dropdown works!</p>
+<div class="single-dropdown-container">
+  <mat-form-field [appearance]="appearance" class="full-width">
+    <mat-label *ngIf="label">{{ label }}</mat-label>
+    
+    <mat-select
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled || loading"
+      [(ngModel)]="value"
+      (ngModelChange)="onValueChange($event)"
+      (opened)="onOpened()"
+      (closed)="onClosed()"
+      [compareWith]="compareWithFn"
+    >
+      <div class="dropdown-header" *ngIf="loading">
+        <mat-spinner diameter="24" class="spinner"></mat-spinner>
+        <span>Loading options...</span>
+      </div>
+      
+      <mat-option *ngIf="showClear && value" [value]="null">
+        <mat-icon>clear</mat-icon>
+        <span>Clear selection</span>
+      </mat-option>
+      
+      <mat-option 
+        *ngFor="let option of options" 
+        [value]="option.value"
+        [disabled]="option.disabled || disabled"
+      >
+        <div class="option-content">
+          <mat-icon *ngIf="option.icon" class="option-icon">{{ option.icon }}</mat-icon>
+          <span class="option-label">{{ option.label }}</span>
+        </div>
+      </mat-option>
+      
+      <div class="no-options" *ngIf="!loading && options.length === 0">
+        No options available
+      </div>
+    </mat-select>
+    
+    <button 
+      *ngIf="showClear && value && !disabled" 
+      matSuffix 
+      mat-icon-button 
+      (click)="clearSelection($event)"
+      type="button"
+      aria-label="Clear"
+      class="clear-button"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    
+    <mat-hint *ngIf="hint" align="start">{{ hint }}</mat-hint>
+    
+    <mat-error *ngIf="error">
+      <mat-icon class="error-icon">error</mat-icon>
+      {{ error }}
+    </mat-error>
+  </mat-form-field>
+</div>

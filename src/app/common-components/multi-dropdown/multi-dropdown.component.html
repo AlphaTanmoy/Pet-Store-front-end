@@ -1,0 +1,126 @@
+<div class="multi-dropdown-container">
+  <mat-form-field [appearance]="appearance" class="full-width">
+    <mat-label *ngIf="label">{{ label }}</mat-label>
+    
+    <mat-select
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled || loading"
+      [multiple]="true"
+      [(ngModel)]="selectedValues"
+      (ngModelChange)="onSelectionChange()"
+      (opened)="onOpened()"
+      (closed)="onClosed()"
+      [compareWith]="trackByValue"
+      panelClass="multi-select-panel"
+      #multiSelect
+    >
+      <!-- Search input -->
+      <div class="dropdown-header" *ngIf="searchable">
+        <mat-form-field appearance="standard" class="search-field">
+          <mat-label>Search</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="searchText" 
+            (ngModelChange)="onSearchChange($event)"
+            (click)="$event.stopPropagation()"
+            placeholder="Type to filter..."
+            autocomplete="off"
+          >
+          <button 
+            *ngIf="searchText" 
+            matSuffix 
+            mat-icon-button 
+            (click)="$event.stopPropagation(); searchText = ''; onSearchChange('')"
+            type="button"
+            aria-label="Clear search"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Select All option -->
+      <mat-option *ngIf="showSelectAll && filteredOptions.length > 0" 
+                 [disabled]="loading"
+                 (click)="$event.stopPropagation(); toggleSelectAll()">
+        <mat-pseudo-checkbox [state]="allSelected ? 'checked' : indeterminate ? 'indeterminate' : ''"></mat-pseudo-checkbox>
+        <span>Select All</span>
+      </mat-option>
+
+      <mat-divider *ngIf="showSelectAll && filteredOptions.length > 0"></mat-divider>
+
+      <!-- Loading state -->
+      <div class="dropdown-header" *ngIf="loading">
+        <mat-spinner diameter="24" class="spinner"></mat-spinner>
+        <span>Loading options...</span>
+      </div>
+
+      <!-- Options list -->
+      <mat-option 
+        *ngFor="let option of filteredOptions; trackBy: trackByValue"
+        [value]="option.value"
+        [disabled]="option.disabled || disabled || (maxSelections && selectedValues.length >= maxSelections && !selectedValues.includes(option.value))"
+        [matTooltip]="(maxSelections && selectedValues.length >= maxSelections && !selectedValues.includes(option.value)) ? 'Maximum ' + maxSelections + ' selections allowed' : ''"
+      >
+        <div class="option-content">
+          <mat-icon *ngIf="option.icon" class="option-icon">{{ option.icon }}</mat-icon>
+          <span class="option-label" [class.option-disabled]="option.disabled">
+            {{ option.label }}
+          </span>
+          <span class="selected-count" *ngIf="selectedValues.includes(option.value)">
+            <mat-icon>check</mat-icon>
+          </span>
+        </div>
+      </mat-option>
+
+      <!-- No options message -->
+      <div class="no-options" *ngIf="!loading && filteredOptions.length === 0">
+        {{ searchText ? 'No matching options found' : 'No options available' }}
+      </div>
+    </mat-select>
+
+    <!-- Selected values as chips -->
+    <div matSuffix class="selected-chips" *ngIf="selectedValues.length > 0">
+      <mat-chip-list>
+        <mat-chip 
+          *ngFor="let value of selectedValues; let i = index; trackBy: trackByValue"
+          [removable]="!disabled"
+          (removed)="removeChip(value, $event)"
+          class="selection-chip"
+        >
+          {{ getOptionLabel(value) }}
+          <mat-icon matChipRemove *ngIf="!disabled">cancel</mat-icon>
+        </mat-chip>
+        <mat-chip *ngIf="selectedValues.length > 3" class="more-chip">
+          +{{ selectedValues.length - 3 }} more
+        </mat-chip>
+      </mat-chip-list>
+    </div>
+
+    <!-- Clear selection button -->
+    <button 
+      *ngIf="showClear && selectedValues.length > 0 && !disabled" 
+      matSuffix 
+      mat-icon-button 
+      (click)="clearSelection($event)"
+      type="button"
+      aria-label="Clear selection"
+      class="clear-button"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <!-- Hint and error messages -->
+    <mat-hint *ngIf="hint" align="start">{{ hint }}</mat-hint>
+    <mat-hint *ngIf="maxSelections" align="end">
+      {{ selectedValues.length }} / {{ maxSelections }} selected
+    </mat-hint>
+    
+    <mat-error *ngIf="error">
+      <mat-icon class="error-icon">error</mat-icon>
+      {{ error }}
+    </mat-error>
+  </mat-form-field>
+</div>

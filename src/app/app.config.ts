@@ -1,22 +1,31 @@
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { provideClientHydration } from '@angular/platform-browser';
+import { ApplicationConfig, ErrorHandler, importProvidersFrom } from '@angular/core';
+import { provideRouter, withViewTransitions } from '@angular/router';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { routes } from './app.routes';
-import { AuthInterceptor } from './services/auth.interceptor';
+import { ErrorHandlerService } from './services/error-handler.service';
+import { LoadingInterceptor } from './utils/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withComponentInputBinding()),
-    provideClientHydration(),
+    provideRouter(routes, withViewTransitions()),
     provideHttpClient(
-      withInterceptorsFromDi()
+      withInterceptorsFromDi(),
+      withInterceptors([])
     ),
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
+    provideAnimations(),
+    importProvidersFrom(
+      MatSnackBarModule,
+      MatButtonModule,
+      MatIconModule,
+      MatProgressSpinnerModule
+    ),
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
   ]
 };

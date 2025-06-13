@@ -1,10 +1,16 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-loader',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule
+  ],
   templateUrl: './loader.component.html',
   styleUrls: ['./loader.component.css']
 })
@@ -12,6 +18,11 @@ export class LoaderComponent implements OnInit, OnDestroy {
   @Input() color: string = '#4f46e5'; // Default indigo-600
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
   @Input() speed: 'slow' | 'normal' | 'fast' = 'normal';
+  @Input() showError: boolean = false;
+  @Input() errorMessage: string = 'The Server is down, It will be back soon..';
+  @Output() retry = new EventEmitter<void>();
+  
+  showRetry = false;
 
   paws: { active: boolean; size: number }[] = [
     { active: false, size: 1 },
@@ -35,6 +46,10 @@ export class LoaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (this.showError) {
+      return;
+    }
+    
     let index = 0;
     const speed = this.speedMap[this.speed];
 
@@ -64,5 +79,10 @@ export class LoaderComponent implements OnInit, OnDestroy {
     if (this.animationInterval) {
       clearInterval(this.animationInterval);
     }
+  }
+
+  onRetry() {
+    this.showRetry = false;
+    this.retry.emit();
   }
 }
