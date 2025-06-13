@@ -5,7 +5,6 @@ import { Observable, of } from 'rxjs';
 import { map, catchError, take } from 'rxjs/operators';
 
 export const authGuard: CanActivateFn = (route, state) => {
-  console.log('AuthGuard: Checking access for', state.url);
   
   const authService = inject(AuthService);
   const router = inject(Router);
